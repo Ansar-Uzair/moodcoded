@@ -22,10 +22,43 @@ const ContentGrid = styled.div`
   }
 `;
 
+const LoadingContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 74px);
+  font-size: 1.2rem;
+  color: #888;
+`;
+
+const ErrorContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 74px);
+  flex-direction: column;
+  gap: 1rem;
+  color: #c00;
+  padding: 2rem;
+`;
+
 const CalendarPage = () => {
   const { theme } = useTheme();
-  const { moods } = useMoodData();
+  const { moods, loading, error } = useMoodData();
   const currentDate = new Date();
+
+  if (loading) {
+    return <LoadingContainer>Loading your moods...</LoadingContainer>;
+  }
+
+  if (error) {
+    return (
+      <ErrorContainer>
+        <div>⚠️ Error loading moods</div>
+        <div style={{ fontSize: '0.9rem' }}>{error}</div>
+      </ErrorContainer>
+    );
+  }
 
   return (
     <PageContainer theme={theme}>

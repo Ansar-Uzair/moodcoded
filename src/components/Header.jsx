@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { useTheme } from '../context/ThemeContext';
+import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 const HeaderContainer = styled.header`
@@ -30,8 +31,8 @@ const Controls = styled.div`
   align-items: center;
 `;
 
-const ThemeToggleButton = styled.button`
-  background: ${props => props.theme.accent};
+const Button = styled.button`
+  background: ${props => props.variant === 'logout' ? '#e74c3c' : props.theme.accent};
   color: white;
   border: none;
   padding: 0.6rem 1.2rem;
@@ -50,12 +51,28 @@ const ThemeToggleButton = styled.button`
   }
 `;
 
+const UserInfo = styled.span`
+  font-size: 0.9rem;
+  opacity: 0.7;
+`;
+
 const Header = () => {
   const { theme, isDark, toggleTheme } = useTheme();
+  const { logout, user } = useAuth();
   const navigate = useNavigate();
+
+  // Don't render header if not logged in
+  if (!user) {
+    return null;
+  }
 
   const handleTitleClick = () => {
     navigate('/');
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
   };
 
   return (
@@ -64,9 +81,15 @@ const Header = () => {
         🌙 Mood Journal
       </Title>
       <Controls>
-        <ThemeToggleButton onClick={toggleTheme} theme={theme}>
+        {user && <UserInfo>@{user.user_metadata?.username || 'user'}</UserInfo>}
+        <Button onClick={toggleTheme} theme={theme}>
           {isDark ? '☀️ Light' : '🌙 Dark'}
-        </ThemeToggleButton>
+        </Button>
+        {user && (
+          <Button onClick={handleLogout} variant="logout">
+            Logout
+          </Button>
+        )}
       </Controls>
     </HeaderContainer>
   );

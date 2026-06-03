@@ -1,7 +1,10 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import styled from 'styled-components';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
+import { AuthProvider } from './context/AuthContext';
 import Header from './components/Header';
+import ProtectedRoute from './components/ProtectedRoute';
+import LoginPage from './pages/LoginPage';
 import CalendarPage from './pages/CalendarPage';
 import DayDetailPage from './pages/DayDetailPage';
 
@@ -20,8 +23,9 @@ const AppContent = () => {
       <Router>
         <Header />
         <Routes>
-          <Route path="/" element={<CalendarPage />} />
-          <Route path="/day/:date" element={<DayDetailPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/" element={<ProtectedRoute><CalendarPage /></ProtectedRoute>} />
+          <Route path="/day/:date" element={<ProtectedRoute><DayDetailPage /></ProtectedRoute>} />
         </Routes>
       </Router>
     </AppWrapper>
@@ -31,7 +35,9 @@ const AppContent = () => {
 const App = () => {
   return (
     <ThemeProvider>
-      <AppContent />
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
     </ThemeProvider>
   );
 };
